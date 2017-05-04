@@ -257,7 +257,8 @@ socks_connect(const char *host, const char *port,
 		/* Read reply */
 		for (r = 0; r < HTTP_MAXHDRS; r++) {
 			proxy_read_line(proxyfd, (char*)buf, sizeof(buf));
-			if (r == 0 && strncmp((char*)buf, "HTTP/1.0 200 ", 12) != 0)
+			if (r == 0 && strncmp((char*)buf, "HTTP/1.0 200 ", 12) != 0 &&
+					strncmp((char*)buf, "HTTP/1.1 200 ", 12) != 0)
 				errx(1, "Proxy error: \"%s\"", buf);
 			/* Discard headers until we hit an empty line */
 			if (*buf == '\0')
