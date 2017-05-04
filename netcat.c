@@ -122,7 +122,7 @@ main(int argc, char *argv[])
 	struct servent *sv;
 	socklen_t len;
 	struct sockaddr_storage cliaddr;
-	char *proxy;
+	char *proxy = NULL;
 	const char *proxyhost = "", *proxyport = NULL;
 	struct addrinfo proxyhints;
 
@@ -788,14 +788,12 @@ atelnet(int nfd, unsigned char *buf, unsigned int size)
 			obuf[1] = DONT;
 		if ((*p == DO) || (*p == DONT))
 			obuf[1] = WONT;
-		if (obuf) {
-			p++;
-			obuf[2] = *p;
-			obuf[3] = '\0';
-			if (atomicio(vwrite, nfd, obuf, 3) != 3)
-				warn("Write Error!");
-			obuf[0] = '\0';
-		}
+		p++;
+		obuf[2] = *p;
+		obuf[3] = '\0';
+		if (atomicio(vwrite, nfd, obuf, 3) != 3)
+			warn("Write Error!");
+		obuf[0] = '\0';
 	}
 }
 
