@@ -714,6 +714,9 @@ readwrite(int nfd)
 			pfd[0].fd = -1;
 			pfd[0].events = 0;
 		}
+		else if (pfd[0].revents & POLLERR)
+			if (write(nfd, "", 1) == -1)
+			    warn("Write error");
 
 		if (!dflag) {
 		    if(pfd[1].revents & POLLIN) {
