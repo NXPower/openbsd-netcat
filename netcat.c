@@ -88,6 +88,7 @@ int	zflag;					/* Port Scan Flag */
 int	Dflag;					/* sodebug */
 int	Sflag;					/* TCP MD5 signature option */
 int	Tflag = -1;				/* IP Type of Service */
+int	Cflag = 0;				/* CRLF line-ending */
 
 int timeout = -1;
 int family = AF_UNSPEC;
@@ -133,7 +134,7 @@ main(int argc, char *argv[])
 	sv = NULL;
 
 	while ((ch = getopt(argc, argv,
-	    "46Ddhi:jklnp:rSs:tT:Uuvw:X:x:z")) != -1) {
+	    "46Ddhi:jklnp:rSs:tT:Uuvw:X:x:zC")) != -1) {
 		switch (ch) {
 		case '4':
 			family = AF_INET;
@@ -219,6 +220,9 @@ main(int argc, char *argv[])
 			break;
 		case 'T':
 			Tflag = parse_iptos(optarg);
+			break;
+		case 'C':
+			Cflag = 1;
 			break;
 		default:
 			usage(1);
@@ -727,8 +731,16 @@ readwrite(int nfd)
 			else if (n == 0) {
 				goto shutdown_wr;
 			} else {
-				if (atomicio(vwrite, nfd, buf, n) != n)
-					return;
+				if ((Cflag) && (buf[n-1]=='\n')) {
+					if (atomicio(vwrite, nfd, buf, n-1) != (n-1))
+						return;
+					if (atomicio(vwrite, nfd, "\r\n", 2) != 2)
+						return;
+				}
+				else {
+					if (atomicio(vwrite, nfd, buf, n) != n)
+						return;
+				}
 			}
 		    }
 		    else if (pfd[1].revents & POLLHUP) {
@@ -932,6 +944,7 @@ help(void)
 #endif
 "	\t-s addr\t	Local source address\n\
 	\t-T ToS\t	Set IP Type of Service\n\
+	\t-C		Send CRLF as line-ending\n\
 	\t-t		Answer TELNET negotiation\n\
 	\t-U		Use UNIX domain socket\n\
 	\t-u		UDP mode\n\
@@ -947,7 +960,7 @@ help(void)
 void
 usage(int ret)
 {
-	fprintf(stderr, "usage: nc [-46DdhklnrStUuvz] [-i interval] [-p source_port]\n");
+	fprintf(stderr, "usage: nc [-46DdhklnrStUuvzC] [-i interval] [-p source_port]\n");
 	fprintf(stderr, "\t  [-s source_ip_address] [-T ToS] [-w timeout] [-X proxy_version]\n");
 	fprintf(stderr, "\t  [-x proxy_address[:port]] [hostname] [port[s]]\n");
 	if (ret)
