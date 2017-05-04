@@ -1,5 +1,5 @@
 #! /bin/sh
-## launch a whole buncha shit at yon victim in no particular order; capture
+## launch various probes at yon victim in no particular order; capture
 ## stderr+stdout in one place.  Run as root for rservice and low -p to work.
 ## Fairly thorough example of using netcat to collect a lot of host info.
 ## Will set off every intrusion alarm in existence on a paranoid machine!
@@ -42,7 +42,7 @@ echo 'END big udp'
 $UCMD -r -z "$1" 175-180 2000-2003 530-533 1524 1525 666 213 8000 6250 2>&1
 # Use our identd-sniffer!
 iscan "$1" 21 25 79 80 111 53 6667 6000 2049 119 2>&1
-# this gets pretty intrusive, but what the fuck.  Probe for portmap first
+# this gets pretty intrusive.  Probe for portmap first
 if nc -w 5 -z -u "$1" 111 ; then
   showmount -e "$1" 2>&1
   rpcinfo -p "$1" 2>&1

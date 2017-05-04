@@ -1,5 +1,5 @@
 #! /bin/sh
-## Shit-simple script to supply the "privmsg <recipient>" of IRC typein, and
+## A simple script to supply the "privmsg <recipient>" of IRC typein, and
 ## keep the connection alive.  Pipe this thru "nc -v -w 5 irc-server port".
 ## Note that this mechanism makes the script easy to debug without being live,
 ## since it just echoes everything bound for the server.
