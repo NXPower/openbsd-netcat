@@ -336,7 +336,7 @@ main(int argc, char *argv[])
 				    &len);
 			}
 
-			if(vflag) {
+			if(vflag && family != AF_UNIX) {
 				/* Don't look up port if -n. */
 				if (nflag)
 					sv = NULL;
